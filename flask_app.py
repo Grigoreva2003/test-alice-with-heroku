@@ -68,12 +68,13 @@ def handle_dialog(req, res):
     ANIMALS = None
     ELEPH, RAB = None, None
 
+    user_id = req['session']['user_id']
+
     if req['session']['new']:
         ELEPH, RAB = 1, 2
         ANIMALS = {ELEPH: 'слона', RAB: 'кролика'}
         current_animal = ANIMALS[ELEPH]
 
-        user_id = req['session']['user_id']
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
         # Запишем подсказки, которые мы ему покажем в первый раз
@@ -89,25 +90,6 @@ def handle_dialog(req, res):
         res['response']['text'] = f'Привет! Купи {current_animal}!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
-        return
-
-    # Сюда дойдем только, если пользователь не новый,
-    # и разговор с Алисой уже был начат
-    # Обрабатываем ответ пользователя.
-    # В req['request']['original_utterance'] лежит весь текст,
-    # что нам прислал пользователь
-    # Если он написал 'ладно', 'куплю', 'покупаю', 'хорошо',
-    # то мы считаем, что пользователь согласился.
-    # Подумайте, всё ли в этом фрагменте написано "красиво"?
-    if any([word in req['request']['original_utterance'].lower() for word in [
-        'ладно',
-        'куплю',
-        'покупаю',
-        'хорошо'
-    ]]):
-        # Пользователь согласился, прощаемся.
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
-        res['response']['end_session'] = True
         return
 
     # Если нет, то убеждаем его купить слона!
