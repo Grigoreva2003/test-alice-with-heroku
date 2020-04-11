@@ -1,11 +1,9 @@
 # импортируем библиотеки
+from flask import Flask, request
 import logging
-import os
+
 # библиотека, которая нам понадобится для работы с JSON
 import json
-
-from flask import Flask, request
-
 
 # создаём приложение
 # мы передаём __name__, в нем содержится информация,
@@ -90,12 +88,12 @@ def handle_dialog(req, res):
     # Если он написал 'ладно', 'куплю', 'покупаю', 'хорошо',
     # то мы считаем, что пользователь согласился.
     # Подумайте, всё ли в этом фрагменте написано "красиво"?
-    if req['request']['original_utterance'].lower() in [
+    if any([word in req['request']['original_utterance'].lower() for word in [
         'ладно',
         'куплю',
         'покупаю',
         'хорошо'
-    ]:
+    ]]):
         # Пользователь согласился, прощаемся.
         res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
         res['response']['end_session'] = True
