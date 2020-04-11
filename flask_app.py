@@ -92,9 +92,28 @@ def handle_dialog(req, res):
         res['response']['buttons'] = get_suggests(user_id)
         return
 
+    # Сюда дойдем только, если пользователь не новый,
+    # и разговор с Алисой уже был начат
+    # Обрабатываем ответ пользователя.
+    # В req['request']['original_utterance'] лежит весь текст,
+    # что нам прислал пользователь
+    # Если он написал 'ладно', 'куплю', 'покупаю', 'хорошо',
+    # то мы считаем, что пользователь согласился.
+    # Подумайте, всё ли в этом фрагменте написано "красиво"?
+    if any([word in req['request']['original_utterance'].lower() for word in [
+        'ладно',
+        'куплю',
+        'покупаю',
+        'хорошо'
+    ]]):
+        # Пользователь согласился, прощаемся.
+        res['response']['text'] = f'{current_animal} можно найти на Яндекс.Маркете!'
+        res['response']['end_session'] = True
+        return
+
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+        f"Все говорят '{req['request']['original_utterance']}', а ты купи {current_animal}!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
