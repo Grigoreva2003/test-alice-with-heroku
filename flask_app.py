@@ -74,8 +74,8 @@ def handle_dialog(req, res, current_animal):
         # Запишем подсказки, которые мы ему покажем в первый раз
 
         #
-        if req['response']['end_session'] and current_animal == ANIMALS[ELEPH]:
-            current_animal = ANIMALS[RAB]
+        # if req['response']['end_session'] and current_animal == ANIMALS[ELEPH]:
+        #     current_animal = ANIMALS[RAB]
 
         sessionStorage[user_id] = {
             'suggests': [
