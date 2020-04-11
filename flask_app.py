@@ -64,9 +64,16 @@ def main():
 
 
 def handle_dialog(req, res):
-    user_id = req['session']['user_id']
+    current_animal = None
+    ANIMALS = None
+    ELEPH, RAB = None, None
 
     if req['session']['new']:
+        ELEPH, RAB = 1, 2
+        ANIMALS = {ELEPH: 'слона', RAB: 'кролика'}
+        current_animal = ANIMALS[ELEPH]
+
+        user_id = req['session']['user_id']
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
         # Запишем подсказки, которые мы ему покажем в первый раз
@@ -79,7 +86,7 @@ def handle_dialog(req, res):
             ]
         }
         # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Купи слона!'
+        res['response']['text'] = f'Привет! Купи {current_animal}!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
         return
