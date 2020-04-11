@@ -29,6 +29,11 @@ logging.basicConfig(level=logging.INFO)
 # Когда он откажется купить слона,
 # то мы уберем одну подсказку. Как будто что-то меняется :)
 sessionStorage = {}
+ELEPH = 1
+RAB = 2
+ANIMALS = {ELEPH: 'слона', RAB: "кролика"}
+
+current_animal = ANIMALS[ELEPH]
 
 
 @app.route('/post', methods=['POST'])
@@ -52,7 +57,7 @@ def main():
     # Отправляем request.json и response в функцию handle_dialog.
     # Она сформирует оставшиеся поля JSON, которые отвечают
     # непосредственно за ведение диалога
-    handle_dialog(request.json, response)
+    handle_dialog(request.json, response, current_animal)
 
     logging.info(f'Response:  {response!r}')
 
@@ -60,13 +65,17 @@ def main():
     return json.dumps(response)
 
 
-def handle_dialog(req, res):
+def handle_dialog(req, res, current_animal):
     user_id = req['session']['user_id']
 
-    if req['session']['new']:
+    if req['session']['new'] or (req['response']['end_session'] and current_animal == ANIMALS[ELEPH]):
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
         # Запишем подсказки, которые мы ему покажем в первый раз
+
+        #
+        if req['response']['end_session'] and current_animal == ANIMALS[ELEPH]:
+            current_animal = ANIMALS[RAB]
 
         sessionStorage[user_id] = {
             'suggests': [
@@ -76,7 +85,7 @@ def handle_dialog(req, res):
             ]
         }
         # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Купи слона!'
+        res['response']['text'] = f'Привет! Купи {current_animal}!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
         return
@@ -96,13 +105,13 @@ def handle_dialog(req, res):
         'хорошо'
     ]]):
         # Пользователь согласился, прощаемся.
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
+        res['response']['text'] = f'{current_animal} можно найти на Яндекс.Маркете!'
         res['response']['end_session'] = True
         return
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+        f"Все говорят '{req['request']['original_utterance']}', а ты купи {current_animal}!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
@@ -125,7 +134,7 @@ def get_suggests(user_id):
     if len(suggests) < 2:
         suggests.append({
             "title": "Ладно",
-            "url": "https://market.yandex.ru/search?text=слон",
+            "url": f"https://market.yandex.ru/search?text={current_animal[:-1]}",
             "hide": True
         })
 
