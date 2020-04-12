@@ -64,16 +64,9 @@ def main():
 
 
 def handle_dialog(req, res):
-    current_animal = None
-    ANIMALS = None
-    ELEPH, RAB = None, None
-
     user_id = req['session']['user_id']
 
     if req['session']['new']:
-        ELEPH, RAB = 1, 2
-        ANIMALS = {ELEPH: 'слона', RAB: 'кролика'}
-        current_animal = ANIMALS[ELEPH]
 
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
@@ -143,6 +136,11 @@ def get_suggests(user_id):
     return suggests
 
 
+ELEPH, RAB = 1, 2
+ANIMALS = {ELEPH: 'слона', RAB: 'кролика'}
+current_animal = ANIMALS[ELEPH]
+
 if __name__ == "__main__":
+    
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
