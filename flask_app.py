@@ -29,9 +29,6 @@ logging.basicConfig(level=logging.INFO)
 # Когда он откажется купить слона,
 # то мы уберем одну подсказку. Как будто что-то меняется :)
 sessionStorage = {}
-ELEPH = 1
-RAB = 2
-ANIMALS = {ELEPH: 'слона', RAB: "кролика"}
 
 
 @app.route('/post', methods=['POST'])
@@ -64,10 +61,10 @@ def main():
 
 
 def handle_dialog(req, res):
+    global current_animal
     user_id = req['session']['user_id']
 
     if req['session']['new']:
-
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
         # Запишем подсказки, которые мы ему покажем в первый раз
@@ -100,9 +97,12 @@ def handle_dialog(req, res):
         'хорошо'
     ]]):
         # Пользователь согласился, прощаемся.
-        res['response']['text'] = f'{current_animal} можно найти на Яндекс.Маркете!'
-        res['response']['end_session'] = True
-        return
+        res['response']['text'] = f'{current_animal.capitalize()} можно найти на Яндекс.Маркете!'
+        if current_animal == ANIMALS[RAB]:
+            res['response']['end_session'] = True
+            return
+        else:
+            current_animal = ANIMALS[RAB]
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
@@ -129,7 +129,7 @@ def get_suggests(user_id):
     if len(suggests) < 2:
         suggests.append({
             "title": "Ладно",
-            "url": "https://market.yandex.ru/search?text=слон",
+            "url": f"https://market.yandex.ru/search?text={current_animal[:-1]}",
             "hide": True
         })
 
@@ -141,6 +141,5 @@ ANIMALS = {ELEPH: 'слона', RAB: 'кролика'}
 current_animal = ANIMALS[ELEPH]
 
 if __name__ == "__main__":
-    
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
