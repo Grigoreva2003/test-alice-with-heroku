@@ -81,8 +81,6 @@ def handle_dialog(req, res):
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
         return
-    else:
-        sessionStorage[user_id]['animal'] = 'кролика'
 
 
     # Сюда дойдем только, если пользователь не новый,
@@ -101,6 +99,7 @@ def handle_dialog(req, res):
     ]]):
         # Пользователь согласился, прощаемся.
         res['response']['text'] = f'{sessionStorage[user_id]["animal"].capitalize()} можно найти на Яндекс.Маркете!'
+        sessionStorage[user_id]['animal'] = 'кролика'
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
