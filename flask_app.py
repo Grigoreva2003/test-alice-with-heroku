@@ -61,7 +61,6 @@ def main():
 
 
 def handle_dialog(req, res):
-    global current_animal
     user_id = req['session']['user_id']
 
     if req['session']['new']:
@@ -74,13 +73,17 @@ def handle_dialog(req, res):
                 "Не хочу.",
                 "Не буду.",
                 "Отстань!",
-            ]
+            ],
+            'animal': 'слона'
         }
         # Заполняем текст ответа
-        res['response']['text'] = f'Привет! Купи {current_animal}!'
+        res['response']['text'] = f'Привет! Купи {sessionStorage[user_id]["animal"]}!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
         return
+    else:
+        sessionStorage[user_id]['animal'] = 'кролика'
+
 
     # Сюда дойдем только, если пользователь не новый,
     # и разговор с Алисой уже был начат
@@ -97,16 +100,11 @@ def handle_dialog(req, res):
         'хорошо'
     ]]):
         # Пользователь согласился, прощаемся.
-        res['response']['text'] = f'{current_animal.capitalize()} можно найти на Яндекс.Маркете!'
-        if current_animal == ANIMALS[RAB]:
-            res['response']['end_session'] = True
-            return
-        else:
-            current_animal = ANIMALS[RAB]
+        res['response']['text'] = f'{sessionStorage[user_id]["animal"].capitalize()} можно найти на Яндекс.Маркете!'
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи {current_animal}!"
+        f"Все говорят '{req['request']['original_utterance']}', а ты купи {sessionStorage[user_id]['animal']}!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
@@ -129,16 +127,12 @@ def get_suggests(user_id):
     if len(suggests) < 2:
         suggests.append({
             "title": "Ладно",
-            "url": f"https://market.yandex.ru/search?text={current_animal[:-1]}",
+            "url": f"https://market.yandex.ru/search?text={sessionStorage[user_id]['animal'][:-1]}",
             "hide": True
         })
 
     return suggests
 
-
-ELEPH, RAB = 1, 2
-ANIMALS = {ELEPH: 'слона', RAB: 'кролика'}
-current_animal = ANIMALS[ELEPH]
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
