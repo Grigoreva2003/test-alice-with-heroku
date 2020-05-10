@@ -101,8 +101,18 @@ def handle_dialog(req, res):
         res['response']['text'] = f'{sessionStorage[user_id]["animal"].capitalize()} можно найти на Яндекс.Маркете!'
         if sessionStorage[user_id]['animal'] == 'слона':
             sessionStorage[user_id]['animal'] = 'кролика'
+            sessionStorage[user_id]['suggests'] = [
+                                                    "Не хочу.",
+                                                    "Не буду.",
+                                                    "Отстань!",
+                                                  ]
         else:
             sessionStorage[user_id]['animal'] = 'слона'
+            sessionStorage[user_id]['suggests'] = [
+                                                    "Не хочу.",
+                                                    "Не буду.",
+                                                    "Отстань!",
+                                                  ]
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
