@@ -99,7 +99,10 @@ def handle_dialog(req, res):
     ]]):
         # Пользователь согласился, прощаемся.
         res['response']['text'] = f'{sessionStorage[user_id]["animal"].capitalize()} можно найти на Яндекс.Маркете!'
-        sessionStorage[user_id]['animal'] = 'кролика'
+        if sessionStorage[user_id]['animal'] == 'слона':
+            sessionStorage[user_id]['animal'] = 'кролика'
+        else:
+            sessionStorage[user_id]['animal'] = 'слона'
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
